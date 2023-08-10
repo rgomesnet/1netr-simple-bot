@@ -1,18 +1,27 @@
-﻿using SimpleBotCore.Logic;
+﻿using MongoDB.Bson;
+using MongoDB.Driver;
+using SimpleBotCore.Logic;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace SimpleBotCore.Repositories
 {
     public class UserProfileMockRepository : IUserProfileRepository
     {
         Dictionary<string, SimpleUser> _users = new Dictionary<string, SimpleUser>();
+        private readonly IMongoCollection<BsonDocument> _collection;
+
+        public UserProfileMockRepository()
+        {
+            var client = new MongoClient("mondb://localhost:27107");
+            var database = client.GetDatabase("chat_bot");
+            _collection = database.GetCollection<BsonDocument>("user_questions");
+        }
+
 
         public SimpleUser TryLoadUser(string userId)
         {
-            if( Exists(userId) )
+            if (Exists(userId))
             {
                 return GetUser(userId);
             }
@@ -22,7 +31,7 @@ namespace SimpleBotCore.Repositories
 
         public SimpleUser Create(SimpleUser user)
         {
-            if ( Exists(user.Id) )
+            if (Exists(user.Id))
                 throw new InvalidOperationException("Usuário ja existente");
 
             SaveUser(user);
@@ -87,7 +96,12 @@ namespace SimpleBotCore.Repositories
 
         private void SaveUser(SimpleUser user)
         {
-            _users[user.Id] = user;
+            _collection.InsertOne(new BsonDocument
+            {
+                {"id", user.Id },
+                {"nome", user.Nome },
+                {"cor", user.Cor }
+            });
         }
     }
 }

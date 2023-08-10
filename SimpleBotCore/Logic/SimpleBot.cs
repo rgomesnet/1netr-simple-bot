@@ -1,8 +1,6 @@
 ﻿using SimpleBotCore.Bot;
 using SimpleBotCore.Repositories;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SimpleBotCore.Logic
@@ -28,7 +26,7 @@ namespace SimpleBotCore.Logic
 
             await WriteAsync("Boa noite!");
 
-            if( user.Nome != null && user.Idade != 0 && user.Cor != null )
+            if (user.Nome != null && user.Idade != 0 && user.Cor != null)
             {
                 await WriteAsync(
                     $"{user.Nome}, de {user.Idade} anos, " +
@@ -36,7 +34,7 @@ namespace SimpleBotCore.Logic
             }
 
 
-            if( user.Nome == null )
+            if (user.Nome == null)
             {
                 await WriteAsync("Qual o seu nome?");
 
@@ -65,18 +63,20 @@ namespace SimpleBotCore.Logic
 
             await WriteAsync($"{user.Nome}, bem vindo ao Oraculo. Você tem direito a 3 perguntas");
 
-            for(int i=0; i<3; i++)
+            for (int i = 0; i < 3; i++)
             {
                 string texto = await ReadAsync();
 
-                if( texto.EndsWith("?") )
+                if (texto.EndsWith("?"))
                 {
                     await WriteAsync("Processando...");
 
                     // FAZER: GRAVAR AS PERGUNTAS EM UM BANCO DE DADOS
                     await Task.Delay(5000);
 
-                    await WriteAsync("Resposta não encontrada");
+                    _userProfile.AtualizaCor(user.Id, texto);
+
+                    //await WriteAsync("Resposta não encontrada");
                 }
                 else
                 {
